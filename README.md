@@ -133,7 +133,3 @@ Default settings can be modified in `ueba_system.py`:
 - SQLite3 (built-in)
 - NumPy
 - scikit-learn (optional, for ML features)
-
-## License
-
-This project is for educational and demonstration purposes.
