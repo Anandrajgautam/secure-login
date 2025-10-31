@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UEBA Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: #1a1f3a;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .stat-card h3 {
+            color: #888;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .section {
+            background: #1a1f3a;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .section h2 {
+            margin-bottom: 20px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #0a0e27;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            color: #888;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #2a2f4a;
+        }
+        
+        tr:hover {
+            background: #2a2f4a;
+        }
+        
+        .risk-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .risk-critical {
+            background: #ff4757;
+            color: #fff;
+        }
+        
+        .risk-high {
+            background: #ffa502;
+            color: #fff;
+        }
+        
+        .risk-medium {
+            background: #ffd32a;
+            color: #000;
+        }
+        
+        .risk-low {
+            background: #2ed573;
+            color: #fff;
+        }
+        
+        .refresh-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="refresh-indicator">🔄 Auto-refresh: 3s</div>
+    
+    <div class="header">
+        <h1>🛡️ UEBA Dashboard</h1>
+        <p>User and Entity Behavior Analytics with Machine Learning</p>
+    </div>
+    
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Attempts</h3>
+            <div class="value" id="total-attempts">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>High Risk Attempts</h3>
+            <div class="value" id="high-risk">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>Active Users (1h)</h3>
+            <div class="value" id="active-users">0</div>
+        </div>
+        <div class="stat-card">
+            <h3>Avg Risk Score</h3>
+            <div class="value" id="avg-risk">0</div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>📊 Recent Login Attempts</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Step</th>
+                    <th>Device ID</th>
+                    <th>Risk Score</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="recent-attempts">
+                <tr><td colspan="5" style="text-align: center; color: #888;">No data yet...</td></tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="grid-2">
+        <div class="section">
+            <h2>🚨 Top Risky Users</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Avg Risk</th>
+                        <th>Attempts</th>
+                    </tr>
+                </thead>
+                <tbody id="risky-users">
+                    <tr><td colspan="3" style="text-align: center; color: #888;">No data yet...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>📱 Device Switchers (30m)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Unique Devices</th>
+                    </tr>
+                </thead>
+                <tbody id="device-switchers">
+                    <tr><td colspan="2" style="text-align: center; color: #888;">No data yet...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="grid-2">
+        <div class="section">
+            <h2>⚡ High Velocity Users (5m)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Attempts</th>
+                    </tr>
+                </thead>
+                <tbody id="high-velocity">
+                    <tr><td colspan="2" style="text-align: center; color: #888;">No data yet...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>🚩 Abandonment Patterns (1h)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Abandonments</th>
+                    </tr>
+                </thead>
+                <tbody id="abandonment-patterns">
+                    <tr><td colspan="2" style="text-align: center; color: #888;">No data yet...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        function updateDashboard() {
+            fetch('/api/metrics')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('total-attempts').textContent = data.total_attempts;
+                    document.getElementById('high-risk').textContent = data.high_risk_attempts;
+                    document.getElementById('active-users').textContent = data.active_users;
+                    document.getElementById('avg-risk').textContent = data.avg_risk_score;
+                    
+                    const attemptsTable = document.getElementById('recent-attempts');
+                    if (data.recent_attempts.length > 0) {
+                        attemptsTable.innerHTML = data.recent_attempts.map(attempt => `
+                            <tr>
+                                <td><strong>${attempt.username}</strong></td>
+                                <td>Step ${attempt.step}</td>
+                                <td><code>${attempt.device_id}</code></td>
+                                <td><span class="risk-badge risk-${attempt.risk_class}">${attempt.risk_score}</span></td>
+                                <td>${attempt.timestamp}</td>
+                            </tr>
+                        `).join('');
+                    }
+                    
+                    const riskyTable = document.getElementById('risky-users');
+                    if (data.risky_users.length > 0) {
+                        riskyTable.innerHTML = data.risky_users.map(user => `
+                            <tr>
+                                <td><strong>${user.username}</strong></td>
+                                <td><span class="risk-badge ${user.avg_risk >= 70 ? 'risk-critical' : 'risk-high'}">${user.avg_risk}</span></td>
+                                <td>${user.attempts}</td>
+                            </tr>
+                        `).join('');
+                    }
+                    
+                    const switchersTable = document.getElementById('device-switchers');
+                    if (data.device_switchers.length > 0) {
+                        switchersTable.innerHTML = data.device_switchers.map(user => `
+                            <tr>
+                                <td><strong>${user.username}</strong></td>
+                                <td><span class="risk-badge ${user.devices > 3 ? 'risk-high' : 'risk-medium'}">${user.devices}</span></td>
+                            </tr>
+                        `).join('');
+                    }
+                    
+                    const velocityTable = document.getElementById('high-velocity');
+                    if (data.high_velocity.length > 0) {
+                        velocityTable.innerHTML = data.high_velocity.map(user => `
+                            <tr>
+                                <td><strong>${user.username}</strong></td>
+                                <td><span class="risk-badge ${user.attempts > 10 ? 'risk-critical' : 'risk-high'}">${user.attempts}</span></td>
+                            </tr>
+                        `).join('');
+                    }
+                    
+                    const abandonmentTable = document.getElementById('abandonment-patterns');
+                    if (data.abandonment_patterns && data.abandonment_patterns.length > 0) {
+                        abandonmentTable.innerHTML = data.abandonment_patterns.map(user => `
+                            <tr>
+                                <td><strong>${user.username}</strong></td>
+                                <td><span class="risk-badge ${user.abandonments > 3 ? 'risk-high' : 'risk-medium'}">${user.abandonments}</span></td>
+                            </tr>
+                        `).join('');
+                    }
+                })
+                .catch(error => console.error('Error fetching metrics:', error));
+        }
+        
+        updateDashboard();
+        setInterval(updateDashboard, 3000);
+    </script>
+</body>
+</html>
